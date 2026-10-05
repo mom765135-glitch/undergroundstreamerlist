@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Underground Streamer Tier List</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#0d0e13; --panel:#151720; --panel2:#1b1e29; --line:#262a38; --text:#f2efe9; --muted:#8e93a6; --gold:#ffd24a; }
+  * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+  body { margin:0; background:radial-gradient(1200px 500px at 50% -150px,#1d1a33 0%,transparent 70%),var(--bg); color:var(--text);
+         font-family:"Manrope","Segoe UI",system-ui,sans-serif; padding:28px 20px 90px; }
+  .wrap { max-width:1180px; margin:0 auto; }
+  .display { font-family:"Anton",Impact,"Arial Narrow",sans-serif; font-weight:400; letter-spacing:.02em; }
+  h1 { margin:0; line-height:1; font-size:clamp(34px,6vw,58px); }
+  p.hint { margin:8px 0 0; color:var(--muted); font-size:14px; max-width:660px; line-height:1.5; }
+  button, input, textarea { font:inherit; font-size:13px; color:var(--text); }
+  button { cursor:pointer; background:#252938; border:1px solid var(--line); border-radius:9px; padding:8px 13px; font-weight:700; transition:background .15s; }
+  button:hover { background:#2f3447; }
+  button.on, button.primary { background:var(--gold); color:#17181f; border-color:var(--gold); }
+  button.primary { font-size:15px; padding:12px 22px; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  input, textarea { background:#0f1118; border:1px solid var(--line); border-radius:9px; padding:8px 11px; }
+  input::placeholder, textarea::placeholder { color:#5f6578; }
+  button:focus-visible, input:focus-visible, textarea:focus-visible, .card:focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
+
+  /* intro */
+  .hero { padding:60px 0 30px; max-width:760px; }
+  .hero h1 { font-size:clamp(44px,9vw,92px); }
+  .hero p { color:var(--muted); font-size:17px; line-height:1.55; margin:18px 0 26px; }
+  .steps { display:flex; gap:14px; flex-wrap:wrap; margin:0 0 28px; }
+  .step { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 16px; width:230px; font-size:14px; line-height:1.45; color:#cfd2de; }
+  .step b { display:block; color:var(--text); margin-bottom:4px; }
+
+  /* builder */
+  header.top { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px; }
+  .count { font-size:13px; color:var(--muted); font-weight:700; }
+  .bar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:10px; margin-bottom:12px; }
+  .seg { display:flex; background:#0f1118; border-radius:10px; padding:3px; }
+  .seg button { border:0; background:transparent; color:var(--muted); padding:8px 14px; border-radius:8px; font-weight:800; }
+  .seg button.on { background:var(--gold); color:#17181f; }
+  .sp { flex:1; }
+  #status { min-height:22px; font-size:13px; font-weight:700; color:var(--gold); margin:0 4px 10px; }
+  .board { border-radius:16px; overflow:hidden; border:1px solid var(--line); background:var(--panel); }
+  .row { --c:#888; display:flex; min-height:112px; border-bottom:1px solid #0d0e13; }
+  .row:last-child { border-bottom:0; }
+  .label { width:104px; flex:none; display:flex; align-items:center; justify-content:center; text-align:center; background:var(--c); color:#14151b; font-family:"Anton",Impact,sans-serif; font-size:44px; padding:6px; outline:none; word-break:break-word; line-height:1; }
+  .zone { flex:1; display:flex; flex-wrap:wrap; align-content:flex-start; gap:8px; padding:10px; min-height:100px; background:linear-gradient(90deg,color-mix(in srgb,var(--c) 13%,var(--panel)),var(--panel) 75%); }
+  .zone.over { outline:2px dashed var(--c); outline-offset:-6px; }
+  h2 { font-family:"Anton",Impact,sans-serif; font-weight:400; letter-spacing:.04em; font-size:20px; margin:26px 0 10px; }
+  .pool { border:1px dashed #343a4c; border-radius:16px; background:var(--panel); }
+  .pool .zone { background:transparent; min-height:130px; }
+  .card { --c:#6b7186; position:relative; width:88px; display:flex; flex-direction:column; align-items:center; gap:6px; cursor:grab; user-select:none; padding:6px 2px; border-radius:12px; transition:transform .15s; }
+  .row .card { --c:inherit; }
+  .card:hover { transform:translateY(-3px); }
+  .card.sel { background:#ffffff14; box-shadow:0 0 0 2px var(--gold); }
+  .card.dragging { opacity:.3; }
+  .ro .card { cursor:default; }
+  .pfp { width:70px; height:70px; border-radius:50%; background:#2c3142; overflow:hidden; display:flex; align-items:center; justify-content:center; font-family:"Anton",Impact,sans-serif; font-size:28px; color:#cfd3e2; box-shadow:0 0 0 3px var(--c,#6b7186), 0 6px 14px #0006; flex:none; }
+  .pfp img { width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
+  .name { font-size:11.5px; font-weight:800; line-height:1.15; text-align:center; max-width:84px; word-break:break-all; }
+  .x { position:absolute; top:-2px; right:4px; width:22px; height:22px; padding:0; border-radius:50%; background:#d6455d; border:0; color:#fff; font-size:14px; line-height:22px; text-align:center; }
+  .finish { position:fixed; left:0; right:0; bottom:0; background:#0d0e13ee; border-top:1px solid var(--line); padding:12px 20px; display:flex; gap:14px; align-items:center; justify-content:center; backdrop-filter:blur(6px); z-index:5; }
+  .finish span { font-size:14px; font-weight:700; color:var(--muted); }
+  details { margin-top:22px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 14px; }
+  details summary { cursor:pointer; font-weight:800; font-size:14px; }
+  details .line { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+  details textarea { flex:1; min-width:220px; min-height:60px; }
+
+  /* results */
+  .res-head { margin:10px 0 26px; }
+  .part { margin:34px 0 14px; }
+  .part h2 { font-size:clamp(24px,4vw,36px); margin:0 0 6px; }
+  .part p { margin:0; color:var(--muted); font-size:14px; }
+  .item { --c:#6b7186; display:flex; gap:18px; align-items:center; background:linear-gradient(90deg,color-mix(in srgb,var(--c) 14%,var(--panel)),var(--panel) 65%); border:1px solid var(--line); border-left:6px solid var(--c); border-radius:14px; padding:14px 18px; margin-bottom:10px; }
+  .num { font-family:"Anton",Impact,sans-serif; font-size:50px; line-height:1; width:78px; text-align:center; color:var(--c); flex:none; }
+  .item .pfp { width:76px; height:76px; }
+  .item .who { font-size:19px; font-weight:800; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .chip { font-size:11px; font-weight:800; color:#14151b; background:var(--c); border-radius:999px; padding:2px 9px; }
+  .item p { margin:5px 0 0; color:#c6cada; font-size:14px; line-height:1.5; }
+  .empty { color:var(--muted); font-size:14px; padding:14px 0; }
+  @media (max-width:640px){ .label{width:64px;font-size:30px} .card{width:74px} .pfp{width:58px;height:58px} .num{width:48px;font-size:32px} .item{gap:10px;padding:12px} .item .pfp{width:54px;height:54px} }
+  @media (prefers-reduced-motion:reduce){ .card{transition:none} .card:hover{transform:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- INTRO -->
+  <section id="intro">
+    <div class="hero">
+      <h1 class="display">Who are the best underground streamers?</h1>
+      <p>Rank the streamers you know into tiers. Every ballot counts toward a community ranking of the top 25 underground streamers, each with a write-up built from how people actually voted. Only streamers averaging 500 viewers or fewer can be on the list.</p>
+      <div class="steps">
+        <div class="step"><b>1. Build your tier list</b>Drag streamers into S through F. Order inside a tier matters.</div>
+        <div class="step"><b>2. See your top 25</b>Counted down from worst to best, with notes on where you and the crowd agree.</div>
+        <div class="step"><b>3. See the community's top 25</b>Ranked from everyone's ballots and described from the numbers.</div>
+      </div>
+      <button class="primary" id="startBtn">Start ranking</button>
+      <button id="introResults" hidden>See results</button>
+      <p id="introCount" style="margin-top:14px"></p>
+    </div>
+  </section>
+
+  <!-- BUILDER -->
+  <section id="app" hidden>
+    <header class="top">
+      <div>
+        <h1 class="display">Your tier list</h1>
+        <p class="hint" id="hint"></p>
+      </div>
+      <div class="count" id="count"></div>
+    </header>
+    <div class="bar">
+      <div class="seg"><button id="vMine">My list</button><button id="vComm">Community</button></div>
+      <span class="sp"></span>
+      <input id="nameIn" placeholder="Your name (optional)" size="16">
+      <input id="addIn" placeholder="Add a Twitch name" size="18">
+      <input id="avgIn" type="number" min="0" placeholder="Avg viewers (if asked)" style="width:150px">
+      <button id="addBtn">Add</button>
+      <button id="editBtn">Remove people</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+    <div id="status"></div>
+    <div class="board" id="board"></div>
+    <h2 id="poolTitle">Unranked</h2>
+    <div class="pool"><div class="zone" id="pool"></div></div>
+    <details id="shareBox">
+      <summary>Share votes without a server</summary>
+      <div class="line"><button id="copyBallot">Copy my ballot</button></div>
+      <div class="line"><textarea id="importTa" placeholder="Paste a ballot code from someone else, then press Import"></textarea><button id="importBtn">Import ballot</button></div>
+    </details>
+    <div class="finish" id="finishBar">
+      <span id="finishInfo"></span>
+      <button class="primary" id="finishBtn">Finish and see results</button>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" hidden>
+    <div class="res-head">
+      <h1 class="display">Results</h1>
+      <p class="hint" id="resInfo"></p>
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <button id="backBtn">Back to my list</button>
+        <button id="copyMine">Copy my top 25</button>
+        <button id="refreshBtn">Refresh community results</button>
+      </div>
+    </div>
+    <div class="part"><h2 class="display">Your top 25, worst to best</h2><p>Your own picks, counted down to your number one.</p></div>
+    <div id="mineList"></div>
+    <div class="part"><h2 class="display">The community's top 25 underground streamers</h2><p id="commNote">Counted down from everyone's ballots.</p></div>
+    <div id="commList"></div>
+  </section>
+</div>
+
+<script>
+/* ===== Optional shared backend (Supabase). Fill these in to make votes shared between everyone. =====
+   Run supabase-setup.sql once in your Supabase project, then paste the Project URL and anon key here. */
+const CFG = { SUPABASE_URL: "", SUPABASE_KEY: "" };
+
+const MAX_AVG = 500, MIN_RANK = 25;
+const TIERS = [["S","#ff5f6d"],["A","#ff9a4d"],["B","#ffd24a"],["C","#8be05a"],["D","#4db8ff"],["F","#a77bff"]];
+const DEFAULT = ["shahsotweaky","akshath10","321jmp","glocapo300","ayokango","zaibgresh","y2chrome","jaydnviolet","widweez","cloyouss","ayetony","simplimyles","auribunn","timmysudo","imdavejosh","fiyahose","imshugg","ishaakage","joonyurr","joshdura","dosmilx","landoniq","m3nchoo","ottoscar","prettboykells","shivbuckets","tentencarti","thatssomavin","theadilshow","topshelfdom","urgentboyw","wildpineapple","younggilly","yeeyenie","ezrablair","patjames","ep1clive","23zyro","dontayek","crashoutkent","cfmarcus","ISO101","chicobean999","camari3x","giannigalluzi","thatsreallydewser","chase2e","imreallyrachel","smailsoofficail","neptuneversus","itsjanotv","chunksterchunkus","noshameflash"];
+const KEY = "ug-tierlist-v5";
+const rid = () => (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : "v"+Math.random().toString(36).slice(2)+Date.now().toString(36);
+
+let S = { added:[], hidden:[], placement:{}, order:[], avg:{}, ballots:{}, vid:rid(), name:"", labels:TIERS.map(t=>t[0]), view:"mine", submitted:false };
+try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.vid) S = Object.assign(S, s); } catch(e){}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+const $ = id => document.getElementById(id);
+const k = n => n.toLowerCase();
+const L = i => S.labels[i] || TIERS[i][0];
+function status(m){ $("status").textContent = m || ""; }
+
+/* ===== backend ===== */
+const REMOTE = { ballots:[], streamers:[] };
+const hasBackend = () => !!(CFG.SUPABASE_URL && CFG.SUPABASE_KEY);
+const sbHeaders = extra => Object.assign({ apikey:CFG.SUPABASE_KEY, Authorization:"Bearer "+CFG.SUPABASE_KEY }, extra||{});
+async function sbGet(table, cols){ const r = await fetch(CFG.SUPABASE_URL.replace(/\/$/,"")+"/rest/v1/"+table+"?select="+cols, { headers:sbHeaders() }); if (!r.ok) throw new Error(r.status); return r.json(); }
+async function sbUpsert(table, row, conflict){ const r = await fetch(CFG.SUPABASE_URL.replace(/\/$/,"")+"/rest/v1/"+table+"?on_conflict="+conflict, { method:"POST", headers:sbHeaders({"Content-Type":"application/json", Prefer:"resolution=merge-duplicates,return=minimal"}), body:JSON.stringify([row]) }); if (!r.ok) throw new Error(r.status); }
+async function loadRemote(){
+  if (!hasBackend()) return;
+  try { REMOTE.ballots = await sbGet("ballots","voter,name,tiers,rank"); REMOTE.streamers = await sbGet("streamers","name,avg"); } catch(e){ status("Couldn't reach the shared vote server. Showing what's saved on this device."); }
+}
+function allBallots(){
+  if (hasBackend()) { const m = new Map(REMOTE.ballots.map(b => [b.voter, b])); return [...m.values()]; }
+  return Object.values(S.ballots);
+}
+function roster(){
+  const seen = new Set(), out = [];
+  [...DEFAULT, ...S.added, ...REMOTE.streamers.map(s=>s.name)].forEach(n => { const key=k(n); if (!seen.has(key) && !S.hidden.includes(key)) { seen.add(key); out.push(n); } });
+  return out;
+}
+
+/* ===== Twitch PFP lookup (several sources) ===== */
+const urlCache = {
+  iso101:"https://static-cdn.jtvnw.net/jtv_user_pictures/3ac339b1-8043-4141-b789-a04eb51e054c-profile_image-300x300.png",
+  shahsotweaky:"https://static-cdn.jtvnw.net/jtv_user_pictures/5a81e016-fd81-40ee-8cae-434135404267-profile_image-300x300.png",
+  akshath10:"https://static-cdn.jtvnw.net/jtv_user_pictures/3a3887d9-1840-4b2f-9d40-4f02e2d4a827-profile_image-300x300.png",
+  "321jmp":"https://static-cdn.jtvnw.net/jtv_user_pictures/3de84140-47c2-470e-b12e-d28b25caa5a9-profile_image-300x300.png",
+  glocapo300:"https://static-cdn.jtvnw.net/jtv_user_pictures/b668e058-7b2c-4ff3-b6d3-23af02d6dcfb-profile_image-300x300.png",
+  zaibgresh:"https://static-cdn.jtvnw.net/jtv_user_pictures/c03ff6c9-bc4d-4c67-9903-c3e8c1a6b489-profile_image-300x300.png"
+};
+try { Object.assign(urlCache, JSON.parse(localStorage.getItem(KEY+"-pfp")) || {}); } catch(e){}
+const inflight = {};
+function tryImg(src){ return new Promise(r => { const i = new Image(); i.onload=()=>r(true); i.onerror=()=>r(false); i.src=src; }); }
+function timeout(ms){ const c = new AbortController(); setTimeout(()=>c.abort(), ms); return c.signal; }
+function resolvePfp(name){
+  const key = k(name);
+  if (urlCache[key]) return Promise.resolve("ok");
+  if (inflight[key]) return inflight[key];
+  let notFound = false;
+  const verify = async u => { if (u && await tryImg(u)) return u; throw new Error("no"); };
+  const sources = [
+    (async () => { // Twitch's own public GraphQL endpoint
+      const r = await fetch("https://gql.twitch.tv/gql", { method:"POST", signal:timeout(10000), headers:{"Client-ID":"kimne78kx3ncx6brgo4mv6wki5h1ko"}, body:JSON.stringify({ query:'query{user(login:"'+key+'"){profileImageURL(width:300)}}' }) });
+      const j = await r.json();
+      if (j && j.data && !j.data.user) notFound = true;
+      return j && j.data && j.data.user && j.data.user.profileImageURL;
+    })().then(verify),
+    (async () => { const j = await (await fetch("https://api.ivr.fi/v2/twitch/user?login="+encodeURIComponent(key), { signal:timeout(10000) })).json(); return Array.isArray(j) && j[0] && j[0].logo; })().then(verify),
+    (async () => { const t = (await (await fetch("https://decapi.me/twitch/avatar/"+encodeURIComponent(key), { signal:timeout(10000) })).text()).trim(); return /^https?:\/\//.test(t) && t; })().then(verify),
+    verify("https://unavatar.io/twitch/"+encodeURIComponent(key))
+  ];
+  return inflight[key] = Promise.any(sources).then(u => { urlCache[key]=u; return "ok"; }, () => notFound ? "missing" : "unknown")
+    .then(res => { delete inflight[key]; if (res==="ok") { try{localStorage.setItem(KEY+"-pfp", JSON.stringify(urlCache));}catch(e){} paintPfp(key); } return res; });
+}
+function fillPfp(el, name){
+  el.dataset.key = k(name); el.textContent = "";
+  const u = urlCache[k(name)];
+  if (u) { const img = new Image(); img.alt=""; img.src=u; el.append(img); } else el.textContent = name[0].toUpperCase();
+}
+function paintPfp(key){ document.querySelectorAll('.pfp[data-key="'+key+'"]').forEach(el => { if(!el.querySelector("img")) fillPfp(el, el.dataset.key); }); }
+
+async function lookupAvg(name){
+  const page = "https://streamscharts.com/channels/" + encodeURIComponent(k(name));
+  for (const url of [page, "https://api.allorigins.win/raw?url="+encodeURIComponent(page), "https://corsproxy.io/?"+encodeURIComponent(page)]) {
+    try {
+      const html = await (await fetch(url, { signal:timeout(9000) })).text();
+      const m = html.match(/Average Viewers 30d:\s*([\d\s\u00a0.,]+[KkMm]?)/);
+      if (m) { let s = m[1].replace(/[\s\u00a0,]/g,""), mult = 1;
+        if (/k$/i.test(s)) { mult=1000; s=s.slice(0,-1); } else if (/m$/i.test(s)) { mult=1e6; s=s.slice(0,-1); }
+        const v = parseFloat(s); if (!isNaN(v)) return Math.round(v*mult); }
+    } catch(e){}
+  }
+  return null;
+}
+
+/* ===== aggregation ===== */
+function agg(){ const m = {}; allBallots().forEach(b => Object.entries(b.tiers||{}).forEach(([n,t]) => { (m[n]=m[n]||[]).push(t); })); return m; }
+function stats(list){
+  const n = list.length, mean = list.reduce((a,b)=>a+b,0)/n;
+  const sd = Math.sqrt(list.reduce((a,b)=>a+(b-mean)*(b-mean),0)/n);
+  return { n, mean, sd, score:5-mean, topPct: Math.round(100*list.filter(t=>t<=1).length/n) };
+}
+function communityTier(n){ const l = agg()[n]; return l ? Math.min(5,Math.max(0,Math.round(stats(l).mean))) : null; }
+
+/* ===== builder ===== */
+let selected=null, dragged=null, editing=false;
+const board=$("board"), pool=$("pool");
+const orderIdx = n => { const i = S.order.indexOf(n); return i<0 ? 1e6 : i; };
+function tierOf(n){
+  if (S.view==="comm") return communityTier(n);
+  const t = S.placement[n]; return (t===undefined||t===null) ? null : t;
+}
+function place(n,t){
+  S.order = S.order.filter(x=>x!==n);
+  if (t===null) delete S.placement[n]; else { S.placement[n]=t; S.order.push(n); }
+  selected=null; S.submitted=false; save(); render();
+}
+function placeBefore(n,target){
+  const t = S.placement[target]; if (t===undefined || n===target) return;
+  S.order = S.order.filter(x=>x!==n); if (!S.order.includes(target)) S.order.push(target);
+  S.order.splice(S.order.indexOf(target),0,n); S.placement[n]=t; selected=null; S.submitted=false; save(); render();
+}
+function makeCard(n){
+  const c = document.createElement("div"); c.className="card"; c.tabIndex=0; c.dataset.n=n;
+  c.title = n + (S.avg[n]!==undefined ? " · avg "+S.avg[n]+" viewers" : "");
+  const p = document.createElement("div"); p.className="pfp"; fillPfp(p,n);
+  const nm = document.createElement("div"); nm.className="name"; nm.textContent=n;
+  c.append(p,nm);
+  if (editing) { const x = document.createElement("button"); x.className="x"; x.textContent="×"; x.title="Remove "+n; x.onclick=e=>{ e.stopPropagation(); removeStreamer(n); }; c.append(x); }
+  if (S.view==="mine") {
+    c.draggable = true;
+    c.addEventListener("dragstart", e => { dragged=c; c.classList.add("dragging"); e.dataTransfer.setData("text/plain", n); });
+    c.addEventListener("dragend", () => { c.classList.remove("dragging"); dragged=null; });
+    c.addEventListener("dragover", e => { if (dragged && S.placement[n]!==undefined) e.preventDefault(); });
+    c.addEventListener("drop", e => { if (dragged && S.placement[n]!==undefined) { e.preventDefault(); e.stopPropagation(); placeBefore(dragged.dataset.n, n); } });
+    c.addEventListener("click", e => { e.stopPropagation(); selected = selected===n ? null : n; render(); });
+    c.addEventListener("keydown", e => { if (e.key==="Enter"||e.key===" ") { e.preventDefault(); selected = selected===n ? null : n; render(); } });
+    if (selected===n) c.classList.add("sel");
+  }
+  return c;
+}
+function wireZone(z,t){
+  z.addEventListener("dragover", e => { if (S.view==="mine") { e.preventDefault(); z.classList.add("over"); } });
+  z.addEventListener("dragleave", () => z.classList.remove("over"));
+  z.addEventListener("drop", e => { e.preventDefault(); z.classList.remove("over"); if (dragged) place(dragged.dataset.n, t); });
+  z.parentElement.addEventListener("click", e => { if (S.view==="mine" && selected && !e.target.closest(".label")) place(selected, t); });
+}
+function ranking(){
+  const r = roster().filter(n => S.placement[n]!==undefined);
+  return r.sort((a,b) => S.placement[a]-S.placement[b] || orderIdx(a)-orderIdx(b));
+}
+function render(){
+  const R = roster();
+  $("app").classList.toggle("ro", S.view==="comm");
+  $("vMine").classList.toggle("on", S.view==="mine"); $("vComm").classList.toggle("on", S.view==="comm");
+  $("editBtn").classList.toggle("on", editing);
+  $("resetBtn").style.display = S.view==="mine" ? "" : "none";
+  $("count").textContent = R.length+" streamers";
+  $("hint").textContent = S.view==="mine"
+    ? "Drag a streamer into a tier, or tap one and then tap a tier row. Drop one onto another to put it ahead of them. Tap a tier letter to rename it. New adds are capped at "+MAX_AVG+" average viewers."
+    : "Where the community puts everyone, averaged from "+allBallots().length+" submitted "+(allBallots().length===1?"ballot":"ballots")+". Switch back to My list to keep ranking.";
+  $("poolTitle").textContent = S.view==="mine" ? "Unranked" : "Nobody has rated these yet";
+  const placed = R.filter(n=>S.placement[n]!==undefined).length;
+  $("finishBar").hidden = S.view!=="mine";
+  $("finishInfo").textContent = placed>=MIN_RANK ? placed+" ranked" : placed+" of "+MIN_RANK+" ranked (you need "+MIN_RANK+" to finish)";
+  $("finishBtn").disabled = placed<MIN_RANK;
+  $("shareBox").hidden = hasBackend();
+  board.textContent=""; pool.textContent="";
+  TIERS.forEach(([t,c],i) => {
+    const row = document.createElement("div"); row.className="row"; row.style.setProperty("--c",c);
+    const label = document.createElement("div"); label.className="label"; label.textContent=L(i); label.contentEditable="true"; label.spellcheck=false;
+    label.addEventListener("input", () => { S.labels[i]=label.textContent; save(); });
+    const zone = document.createElement("div"); zone.className="zone";
+    R.filter(n=>tierOf(n)===i).sort((a,b)=>orderIdx(a)-orderIdx(b)).forEach(n => zone.append(makeCard(n)));
+    row.append(label,zone); board.append(row); wireZone(zone,i);
+  });
+  R.filter(n=>tierOf(n)===null).forEach(n => pool.append(makeCard(n)));
+  wireZone(pool,null);
+}
+function removeStreamer(n){ S.hidden.push(k(n)); delete S.placement[n]; S.order=S.order.filter(x=>x!==n); save(); render(); }
+
+let adding=false;
+async function addStreamer(){
+  if (adding) return;
+  const inp=$("addIn"), avgIn=$("avgIn");
+  const n = inp.value.trim().replace(/^https?:\/\/(www\.)?twitch\.tv\//i,"").replace(/[\/?#].*$/,"").replace(/^@/,"");
+  if (!/^[A-Za-z0-9_]{2,25}$/.test(n)) { status("Enter a Twitch username like cloyouss."); return; }
+  if (roster().some(x=>k(x)===k(n))) { status(n+" is already on the list."); return; }
+  adding=true;
+  try {
+    status("Looking up "+n+"…");
+    const pf = await resolvePfp(n);
+    if (pf==="missing") { status("Couldn't find a Twitch account named "+n+"."); return; }
+    let avg = await lookupAvg(n);
+    if (avg===null && avgIn.value!=="") avg = Math.round(Number(avgIn.value));
+    if (avg===null || isNaN(avg)) { status("Couldn't read "+n+"'s average viewers automatically. Type it in the Avg viewers box and press Add again."); avgIn.focus(); return; }
+    if (avg>MAX_AVG) { status(n+" averages "+avg+" viewers, over the "+MAX_AVG+" cap, so they weren't added."); return; }
+    S.hidden = S.hidden.filter(x=>x!==k(n)); S.added.push(n); S.avg[n]=avg; inp.value=""; avgIn.value=""; save();
+    if (hasBackend()) { try { await sbUpsert("streamers",{name:n,avg},"name"); REMOTE.streamers.push({name:n,avg}); } catch(e){} }
+    render(); status("Added "+n+" ("+avg+" avg viewers)."+(pf==="ok" ? "" : " Their PFP couldn't be loaded."));
+  } finally { adding=false; }
+}
+
+/* ===== finishing + results ===== */
+function makeBallot(){
+  const tiers = {}; roster().forEach(n => { if (S.placement[n]!==undefined) tiers[n]=S.placement[n]; });
+  return { voter:S.vid, name:(S.name||"").trim()||"Anonymous", tiers, rank:ranking().slice(0,MIN_RANK) };
+}
+async function finish(){
+  const b = makeBallot(); S.submitted=true; S.ballots[S.vid]=b; save();
+  if (hasBackend()) { try { await sbUpsert("ballots",b,"voter"); await loadRemote(); } catch(e){ status("Your ballot is saved here, but the shared server didn't accept it."); } }
+  showResults();
+}
+function show(id){ ["intro","app","results"].forEach(s => $(s).hidden = s!==id); window.scrollTo(0,0); }
+
+function pickText(name, rank, myT, A){
+  const parts = []; const l = A[name];
+  const place = rank===1 ? "Your number one." : rank<=3 ? "On your podium at #"+rank+"." : rank===MIN_RANK ? "The last spot in your top "+MIN_RANK+"." : "#"+rank+" on your list.";
+  parts.push(place+" You put them in "+L(myT)+" tier.");
+  if (l && l.length>=2) {
+    const st = stats(l), ct = Math.min(5,Math.max(0,Math.round(st.mean))), d = myT-st.mean;
+    if (d < -0.75) parts.push("That's higher than the crowd, who land around "+L(ct)+" ("+l.length+" ballots).");
+    else if (d > 0.75) parts.push("That's tougher than the crowd, who lean "+L(ct)+" ("+l.length+" ballots).");
+    else parts.push("You and the community are close: "+L(ct)+" tier across "+l.length+" ballots.");
+  } else parts.push("Nobody else has rated them yet, so you're setting the early mark.");
+  if (S.avg[name]!==undefined) parts.push("They average about "+S.avg[name]+" viewers.");
+  return parts.join(" ");
+}
+function communityText(e, mineRank){
+  const parts = [];
+  parts.push("Averages "+L(Math.min(5,Math.max(0,Math.round(e.mean))))+" tier ("+e.score.toFixed(1)+" out of 5) from "+e.n+(e.n===1?" ballot.":" ballots."));
+  if (e.n>=2) {
+    parts.push(e.topPct+"% of voters put them in "+L(0)+" or "+L(1)+".");
+    parts.push(e.sd<0.7 ? "Voters mostly agree on this one." : e.sd>1.3 ? "Voters are split: some rank them near the top, others far lower." : "There's a bit of disagreement, but the lean is clear.");
+  }
+  if (S.avg[e.n_]!==undefined) parts.push("About "+S.avg[e.n_]+" average viewers.");
+  if (mineRank>0 && mineRank<=MIN_RANK) parts.push("You had them #"+mineRank+".");
+  else if (mineRank===0) parts.push("You didn't rank them.");
+  return parts.join(" ");
+}
+function item(num, name, tierIdx, text){
+  const c = TIERS[tierIdx][1];
+  const d = document.createElement("div"); d.className="item"; d.style.setProperty("--c",c);
+  const n = document.createElement("div"); n.className="num"; n.textContent=num;
+  const p = document.createElement("div"); p.className="pfp"; fillPfp(p,name);
+  const box = document.createElement("div");
+  const who = document.createElement("div"); who.className="who";
+  const nm = document.createElement("span"); nm.textContent=name;
+  const chip = document.createElement("span"); chip.className="chip"; chip.textContent=L(tierIdx);
+  who.append(nm,chip);
+  const para = document.createElement("p"); para.textContent=text;
+  box.append(who,para); d.append(n,p,box); return d;
+}
+function showResults(){
+  show("results");
+  const A = agg(), mine = ranking().slice(0,MIN_RANK);
+  const nb = allBallots().length;
+  $("resInfo").textContent = "Based on "+nb+" submitted "+(nb===1?"ballot":"ballots")+(hasBackend() ? " from everyone who has voted." : " saved on this device. Import other people's ballot codes to widen it.");
+  const ml = $("mineList"); ml.textContent="";
+  for (let i=mine.length-1;i>=0;i--) { const n=mine[i]; ml.append(item(i+1, n, S.placement[n], pickText(n,i+1,S.placement[n],A))); resolvePfp(n); }
+  const entries = Object.entries(A).map(([n,l]) => Object.assign({n_:n}, stats(l)))
+    .filter(e => roster().some(r=>r===e.n_))
+    .sort((a,b) => b.score-a.score || b.n-a.n || a.sd-b.sd).slice(0,25);
+  const cl = $("commList"); cl.textContent="";
+  $("commNote").textContent = entries.length ? "Counted down from everyone's ballots. Each write-up comes from the votes: the average tier, how many voters, and how much they agree." : "";
+  if (!entries.length) { const d=document.createElement("div"); d.className="empty"; d.textContent="No ballots yet."; cl.append(d); }
+  const myRank = n => { const i = mine.indexOf(n); return i>=0 ? i+1 : 0; };
+  for (let i=entries.length-1;i>=0;i--) {
+    const e = entries[i], ti = Math.min(5,Math.max(0,Math.round(e.mean)));
+    cl.append(item(i+1, e.n_, ti, communityText(e, myRank(e.n_)))); resolvePfp(e.n_);
+  }
+}
+
+/* ===== wiring ===== */
+$("startBtn").onclick = () => { show("app"); render(); };
+$("introResults").onclick = () => showResults();
+$("backBtn").onclick = () => { show("app"); render(); };
+$("refreshBtn").onclick = async () => { await loadRemote(); showResults(); };
+$("finishBtn").onclick = finish;
+$("addBtn").onclick = addStreamer;
+$("addIn").addEventListener("keydown", e => { if (e.key==="Enter") addStreamer(); });
+$("nameIn").value = S.name; $("nameIn").addEventListener("change", e => { S.name=e.target.value; save(); });
+$("editBtn").onclick = () => { editing=!editing; render(); };
+$("resetBtn").onclick = () => { if (confirm("Clear your tier list and start over?")) { S.placement={}; S.order=[]; selected=null; S.submitted=false; save(); render(); } };
+$("vMine").onclick = () => { S.view="mine"; save(); render(); };
+$("vComm").onclick = async () => { S.view="comm"; save(); await loadRemote(); render(); };
+$("copyMine").onclick = async () => {
+  const mine = ranking().slice(0,MIN_RANK); const lines = [];
+  for (let i=mine.length-1;i>=0;i--) lines.push((i+1)+". "+mine[i]+" ("+L(S.placement[mine[i]])+")");
+  try { await navigator.clipboard.writeText("My top "+mine.length+" underground streamers (worst to best)\n"+lines.join("\n")); $("copyMine").textContent="Copied"; setTimeout(()=>$("copyMine").textContent="Copy my top 25",1500); } catch(e){}
+};
+$("copyBallot").onclick = async () => {
+  const code = btoa(unescape(encodeURIComponent(JSON.stringify(makeBallot()))));
+  try { await navigator.clipboard.writeText(code); status("Ballot code copied. Send it to whoever is running the list."); } catch(e){ $("importTa").value=code; status("Copy the code from the box."); }
+};
+$("importBtn").onclick = () => {
+  try { const o = JSON.parse(decodeURIComponent(escape(atob($("importTa").value.trim())))); if (!o.voter || typeof o.tiers!=="object") throw 0;
+    S.ballots[o.voter]=o; save(); $("importTa").value=""; render(); status("Imported a ballot from "+(o.name||"Anonymous")+"."); }
+  catch(e){ status("That ballot code didn't work. Make sure the whole code is pasted."); }
+};
+
+/* ===== start ===== */
+(async function init(){
+  await loadRemote();
+  const nb = allBallots().length;
+  $("introCount").textContent = nb ? nb+(nb===1?" ballot":" ballots")+" so far." : "No ballots yet. Be the first.";
+  $("introResults").hidden = !S.submitted;
+  const res = await Promise.all(roster().map(n => resolvePfp(n).then(r=>[n,r])));
+  const ok = res.filter(x=>x[1]==="ok").leng
